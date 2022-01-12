@@ -4,7 +4,7 @@ flaskを拡張していつも設定するような内容を事前に設定でき
 # クイックスタート(Windows)
 1. [example.config.yml](https://github.com/KiharaTakahiro/beaker/blob/main/example.config.yml)をもとにconfig.ymlを作成(とりあえず試すだけならばリネームでOK)
 1. `python app.py`にてbeakerを実行
-1. http://127.0.0.1:5000/　にアクセスするとwelcomeページが表示される
+1. [http://127.0.0.1:5000/](http://127.0.0.1:5000/)にアクセスするとwelcomeページが表示される
 
 # 使い方
 ## web.pyにてrouterの設定を行う
