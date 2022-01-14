@@ -11,7 +11,7 @@ flaskを拡張していつも設定するような内容を事前に設定でき
 
 
 # 使い方
-## web.pyにてrouterの設定を行う
+## [web.py](https://github.com/KiharaTakahiro/beaker/blob/main/web.py)にてrouterの設定を行う
 ```python: web.py
 # routerのインポート
 from common.beaker import BeakerRouter
