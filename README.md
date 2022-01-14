@@ -5,6 +5,8 @@ flaskを拡張していつも設定するような内容を事前に設定でき
 1. [example.config.yml](https://github.com/KiharaTakahiro/beaker/blob/main/example.config.yml)をもとにconfig.ymlを作成(とりあえず試すだけならばリネームでOK)
 1. `python app.py`にてbeakerを実行
 1. [http://127.0.0.1:5000/](http://127.0.0.1:5000/)にアクセスするとwelcomeページが表示される
+
+
 ※現時点でパッケージ管理を何にするか決めていないのでモジュール不足でエラーとなった場合は必要なモジュールのインストールをお願いします。
 
 
