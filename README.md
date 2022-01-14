@@ -39,6 +39,18 @@ def welcome():
 ```
 ※細かく記載するのを省略しますが、内部は[CSRF Protection](https://flask-wtf.readthedocs.io/en/0.15.x/csrf/)を使用しているのでForm以外で使用している場合もドキュメントに沿ってCSRFトークンを含めていただければと思います。
 
+## ログ出力
+loggerをインポートしてそれぞれのメソッドを呼び出すことでログ出力が可能になります。
+```
+from common.beaker import logger
+
+def welcome():
+  logger.debug('debugログの出力')
+  logger.info('infoログの出力')
+  logger.warning('warningログの出力')
+  logger.error('errorログの出力')
+
+```
 
 ## SQLの実行
 SQLの実行はstart_transactionを使用して実行できます。
