@@ -31,6 +31,15 @@ def welcome():
   return render_template('welcome.html')
 ```
 
+## CSRFトークン
+デフォルトではCSRFトークンがない場合はPOST時にエラーとなります。
+下記のようにFormにCSRFトークンを含めてください。
+```html
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+```
+※細かく記載するのを省略しますが、内部は[CSRF Protection](https://flask-wtf.readthedocs.io/en/0.15.x/csrf/)を使用しているのでForm以外で使用している場合もドキュメントに沿ってCSRFトークンを含めていただければと思います。
+
+
 ## SQLの実行
 SQLの実行はstart_transactionを使用して実行できます。
 ### 取得系のSQL(SELECT文の場合)
