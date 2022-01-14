@@ -17,13 +17,13 @@ flaskを拡張していつも設定するような内容を事前に設定でき
 from common.beaker import BeakerRouter
 router = BeakerRouter()
 
+from controllers.welcome_controller import welcome, welcome_post
+
 # ルート定義の設定
 # GETさせたい場合はrouter.get(endpoint, function)となるように記載する
-from controllers.welcome_controller import welcome, welcome_post
 router.get('/', welcome)
-
-# POSTさせたい場合はrouter.post(endpoint, function)となるように記載する 現時点ではロジックが書かれてないので記載しても実行できません
-router.post('/', welcome_post)
+# POSTさせたい場合はrouter.post(endpoint, function)となるように記載する
+router.post('/welcome_post', welcome_post)
 
 ```
 ## routerで指定した処理を記載する
