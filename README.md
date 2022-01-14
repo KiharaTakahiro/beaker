@@ -30,3 +30,38 @@ def welcome():
   # flaskのrender_templateと同様の方法をbeakerから使用できる(bakerのrender_templateを使用すればデバッグログで実行内容が出力されます)
   return render_template('welcome.html')
 ```
+
+## SQLの実行
+SQLの実行はstart_transactionを使用して実行できます。
+### 取得系のSQL(SELECT文の場合)
+```python
+from common.beaker import start_transaction
+
+def execute_sql():
+  with start_transaction() as tx:
+    # 複数行取得の場合
+    users = tx.find_all({実行するSQL})
+    # 最初の一件目取得の場合
+    user = tx.find_one({実行するSQL})
+```
+
+### 更新系のSQL(INSERT, UPDATE文の場合)
+```python
+from common.beaker import start_transaction
+
+def execute_sql():
+  with start_transaction(read_only = False) as tx:
+    tx.save({実行するSQL})
+
+```
+
+### 削除系のSQL(DELETE文の場合)
+```python
+from common.beaker import start_transaction
+
+def execute_sql():
+  with start_transaction(read_only = False) as tx:
+    tx.delete({実行するSQL})
+
+```
+※ロジック上はsaveでも削除系のSQLの実行は可能だが、今後の拡張も考えて削除時に実行するSQLは分けることを推奨します。
