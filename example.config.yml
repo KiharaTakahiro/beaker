@@ -15,7 +15,7 @@ log:
       formatter: customFormatter
       class: logging.handlers.TimedRotatingFileHandler
       level: DEBUG
-      filename: app.log
+      filename: ./logs/app.log
       encoding: utf8
       when: 'D'
       interval: 1

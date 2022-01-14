@@ -92,6 +92,14 @@ def set_session(key, value):
   session_by_flask[key] = value
 
 def render_template(template_name_or_list, **context):
+  """Beaker用テンプレート表示処理
+
+  Args:
+      template_name_or_list (str): テンプレート名
+
+  Returns:
+      Any: Flaskのテンプレート
+  """
   logger = get_logger()
   logger.debug(f"テンプレート名: {template_name_or_list}")
   logger.debug(f"コンテキスト: {context}")
@@ -199,9 +207,9 @@ class BeakerDB():
       db_info['user'],\
       db_info['password'])
   
-  def start_transaction(self, read_only = False):
+  def start_transaction(self, read_only = True):
     return Transaction(self._connector, self._logger, read_only)
 
 _beaker_db = BeakerDB(get_config(), get_logger())
-def start_transaction(read_only = False):
+def start_transaction(read_only = True):
   return _beaker_db.start_transaction(read_only=read_only)
