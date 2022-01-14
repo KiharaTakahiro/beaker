@@ -44,7 +44,7 @@ loggerをインポートしてそれぞれのメソッドを呼び出すこと�
 ```
 from common.beaker import logger
 
-def welcome():
+def log_test():
   logger.debug('debugログの出力')
   logger.info('infoログの出力')
   logger.warning('warningログの出力')
@@ -52,6 +52,20 @@ def welcome():
 
 ```
 
+## セッションの使用
+セッションを使用することができます。
+下記のメソッドを使用して設定および取得を行ってください。
+```
+from common.beaker import get_session, set_session
+
+def session_test():
+  # セッションの設定
+  set_session('key', 'value')
+  
+  # セッションの取得
+  session_value = get_session('key')
+
+```
 ## SQLの実行
 SQLの実行はstart_transactionを使用して実行できます。
 ### 取得系のSQL(SELECT文の場合)
