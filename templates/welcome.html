@@ -1,4 +1,9 @@
 <html>
-  <h1>WELCOME BEAKER</h1>
+  <h1>{{ welcome_text }}</h1>
   <img src="{{ url_for('static', filename='img/beaker-1.jpg') }}" alt="BAKERの画像" title="BEAKERの画像">
+  <form action="welcome_post" method="post">
+    <input type="text" name="welcome-text"/>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button id="post-button" type="submit">送信</button>
+  </form>
 </html>

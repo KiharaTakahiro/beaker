@@ -36,6 +36,13 @@ def get_config():
   """
   return _beaker_config.get_config()
 
+class BeakerLogLevel():
+  """ログレベル設定用のクラス
+  """
+  DEBUG = 10
+  INFO = 20
+  WARNING = 30
+  ERROR = 40
 class BeakerLogger():
   """Beaker用のログ管理クラス
   """
@@ -48,17 +55,61 @@ class BeakerLogger():
     logging.config.dictConfig(config['log'])
     self._logger = logging.getLogger(logger_name)
 
-  def get_logger(self):
-    return self._logger
+  def log(self, msg, log_level):
+    """ログレベルに応じたログ出力
 
-_logger = BeakerLogger(get_config())
-def get_logger():
-  """ロガーの取得処理
+    Args:
+        msg (str): エラーメッセージ
+        log_level (BeakerLogLevel): Beaker用のログレベル
 
-  Returns:
-      logger: ロギングのログを返却する
-  """
-  return _logger.get_logger()
+    Raises:
+        Exception: [description]
+    """
+    if BeakerLogLevel.DEBUG == log_level:
+      self.debug(msg)
+    elif BeakerLogLevel.INFO == log_level:
+      self.info(msg)
+    elif BeakerLogLevel.WARNING == log_level:
+      self.warning(msg)
+    elif BeakerLogLevel.ERROR == log_level:
+      self.error(msg)
+    else:
+      raise Exception(f"存在しないログレベルです。log_level: {log_level}")
+
+  def debug(self, msg):
+    """デバッグログの出力
+
+    Args:
+        msg (str): 出力メッセージ
+    """
+    self._logger.debug(msg)
+
+  def info(self, msg):
+    """インフォログの出力
+
+    Args:
+        msg (str): 出力メッセージ
+    """
+    self._logger.info(msg)
+
+  def warning(self, msg):
+    """警告ログの出力
+
+    Args:
+        msg (str): 出力メッセージ
+    """
+    self._logger.warning(msg)
+
+  def error(self, msg):
+    """エラーログの出力
+
+    Args:
+        msg (str): 出力メッセージ
+    """
+    self._logger.error(msg)
+
+
+logger = BeakerLogger(get_config())
 
 def get_session(key):
   """セッションの値取得処理
@@ -69,7 +120,6 @@ def get_session(key):
   Returns:
       str: セッションの値 
   """
-  logger = get_logger()
   logger.debug(f"キー: {key}")
 
   if key not in session_by_flask:
@@ -86,7 +136,6 @@ def set_session(key, value):
       key (str): セッションのキー
       value (str): セッションの値
   """
-  logger = get_logger()
   logger.debug(f"キー: {key}")
   logger.debug(f"値: {value}")
   session_by_flask[key] = value
@@ -100,7 +149,6 @@ def render_template(template_name_or_list, **context):
   Returns:
       Any: Flaskのテンプレート
   """
-  logger = get_logger()
   logger.debug(f"テンプレート名: {template_name_or_list}")
   logger.debug(f"コンテキスト: {context}")
   return render_template_by_flask(template_name_or_list, **context)
@@ -130,9 +178,6 @@ class Beaker():
      Flaskを拡張してWEBを作成しやすく拡張する
   """
   def __init__(self):
-
-    # ロガーの生成
-    logger = get_logger()
 
     # コンフィグの読み込み
     app_vars = get_config()['app']
@@ -181,7 +226,6 @@ class Beaker():
   def _request_logger(self):
     """リクエストの内容をログ出力
     """
-    logger = get_logger()
     logger.debug(f"セッション情報: {session_by_flask}")
     logger.debug(f"リクエスト情報: {request_by_flask}")
 
@@ -208,8 +252,26 @@ class BeakerDB():
       db_info['password'])
   
   def start_transaction(self, read_only = True):
+    """トランザクション開始処理
+
+    Args:
+        read_only (bool, optional): 読み込み専用か？ 読み込み専用の場合はTrueとなりコミットを行わない. Defaults to True.
+
+    Returns:
+        Transaction: トランザクションを返却する
+    """
     return Transaction(self._connector, self._logger, read_only)
 
-_beaker_db = BeakerDB(get_config(), get_logger())
+_beaker_db = BeakerDB(get_config(), logger)
 def start_transaction(read_only = True):
+  """トランザクション開始処理
+
+  Args:
+      read_only (bool, optional): 読み込み専用か？ 読み込み専用の場合はTrueとなりコミットを行わない. Defaults to True.
+
+  Returns:
+      Transaction: トランザクションを返却する
+  """
   return _beaker_db.start_transaction(read_only=read_only)
+
+request = request_by_flask
