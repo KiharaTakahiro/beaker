@@ -104,3 +104,49 @@ def execute_sql():
 
 ```
 ※ロジック上はsaveでも削除系のSQLの実行は可能だが、今後の拡張も考えて削除時に実行するSQLは分けることを推奨します。
+
+## カスタムフィルタの追加について
+[template_filters.py](https://github.com/KiharaTakahiro/beaker/blob/main/template_filters.py)に記載されたメソッドはtemplateで同名のカスタムフィルタが使用可能になります。
+### template_filters.pyにてカスタムフィルタを追加する（例は金額変換処理）
+```
+from common.beaker import logger
+
+def convert_money(number, is_none_text = '0'):
+  """3桁カンマ区切りの金額に変換する処理
+     例) 10000 → 10,000
+
+     注意点) 小数点は未対応のため必要な場合は別のメソッドを作成して対応する
+  Args:
+      number (number): カンマ区切りにする数値 
+      is_none_text (str, optional): numberがNoneの場合の置き換え文字列. Defaults to '0'.
+
+  Returns:
+      str: 3桁カンマ区切りの金額を返却
+  """
+  # 対象がNoneの場合は置き換えようの文字列を返却
+  if number is None:
+    return is_none_text
+
+  try:
+    logger.debug(f'3桁カンマ区切り処理のnumber: {number}')
+
+    # 3桁カンマ区切りの文字列を返却
+    return '{:,}'.format(int(number))
+
+  except Exception:
+    # HACK: 全体的に表示に関わる部分でエラーにしないようにしたほうが良いと考えて元文字列の返却を行っている
+    #       運用の中でエラーの発見を起こすリスクも考えた上で再度検討しても良いと考えている
+    logger.warning(f'3桁カンマ区切り処理に失敗しています number: {number}')
+    return number
+```
+### template内で以下のように指定して使用が可能
+```
+# 通常の使い方で第一引数に1000として関数が実行された結果が返ってくる
+{{ 1000 | convert_money }}
+
+# 第二引数以降を使いたい場合は以下のようにする
+{{ None | convert_money('-') }}
+
+# キーワード引数も使用可能
+{{ None | convert_money(is_none_text'-') }}
+```
