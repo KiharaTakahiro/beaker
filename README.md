@@ -11,7 +11,8 @@ flaskを拡張していつも設定するような内容を事前に設定でき
 
 
 # 使い方
-## [web.py](https://github.com/KiharaTakahiro/beaker/blob/main/web.py)にてrouterの設定を行う
+## ルート定義設定
+### [web.py](https://github.com/KiharaTakahiro/beaker/blob/main/web.py)にてrouterの設定を行う
 ```python: web.py
 # routerのインポート
 from common.beaker import BeakerRouter
@@ -26,7 +27,7 @@ router.get('/', welcome)
 router.post('/welcome_post', welcome_post)
 
 ```
-## routerで指定した処理を記載する
+### routerで指定した処理を記載する
 ```python: test_controller.py
 from common.beaker import render_template # beakerでrender_templateが使えます
 
