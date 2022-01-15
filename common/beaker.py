@@ -56,6 +56,9 @@ class BeakerLogger():
     Args:
         config (BeakerConfig): Beaker用のConfig定義クラス
     """
+
+    # FIXME: 現時点ではfuncname等がBeakerLogger内のメソッドとなってしまう。
+    #        本来は呼び出し元のメソッドを見るべきであり、修正する必要がある
     logging.config.dictConfig(config['log'])
     self._logger = logging.getLogger(logger_name)
 
