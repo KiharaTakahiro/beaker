@@ -1,9 +1,24 @@
 <html>
   <h1>{{ welcome_text }}</h1>
+
   <img src="{{ url_for('static', filename='img/beaker-1.jpg') }}" alt="BAKERの画像" title="BEAKERの画像">
   <form action="welcome_post" method="post">
     <input type="text" name="welcome-text"/>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button id="post-button" type="submit">送信</button>
   </form>
+
+  <p>金額変換処理の確認1: {{ 1000 | convert_money }} 円</p>
+  <p>金額変換処理の確認2: {{ '1000' | convert_money }} 円</p>
+  <p>金額変換処理の確認3: {{ None | convert_money }} 円</p>
+  <p>金額変換処理の確認4: {{ None | convert_money('-') }} 円</p>
+  <p>金額変換処理の確認5: {{ '金額' | convert_money }} 円 ※表示はするがログにはwarningで出力される</p>
+
+  <p>文字列結合処理の確認1: {{["a", "b", "c"] | concat_list }}</p>
+  <p>文字列結合処理の確認2: {{["a", "b", "c"] | concat_list(" ") }}</p>
+  <p>文字列結合処理の確認3: {{ [] | concat_list }}</p>
+  <p>文字列結合処理の確認4: {{ [] | concat_list(empty_text='空です') }}</p>
+  <p>文字列結合処理の確認5: {{ "aaa" | concat_list }} ※エラーにはならないがログにはwarningで出力される</p>
+  <p>文字列結合処理の確認6: {{ "aaa" | concat_list(exception_text='エラー発生!') }} ※エラーにはならないがログにはwarningで出力される</p>
+
 </html>

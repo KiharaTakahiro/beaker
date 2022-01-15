@@ -7,7 +7,10 @@ from datetime import timedelta
 from common.db import DbConnecter, Transaction
 from .utility import load_yaml
 import logging.config
+import sys
+import inspect
 
+_py2 = sys.version_info[0] == 2
 class BeakerConfig():
   """Beaker用のConfig定義クラス
   """
@@ -43,6 +46,7 @@ class BeakerLogLevel():
   INFO = 20
   WARNING = 30
   ERROR = 40
+
 class BeakerLogger():
   """Beaker用のログ管理クラス
   """
@@ -208,11 +212,19 @@ class Beaker():
     from web import router
     router.regist_flask(self.__flask)
 
+    # templateの定義を取得
+    import template_filters
+    filters = inspect.getmembers(template_filters, inspect.ismethod if _py2 else inspect.isfunction)
+    for filter in filters:
+      _, function = filter
+      self.__flask.add_template_filter(function)
+
+
   def before_request(self, function):
     """リクエスト実行前のロジックを格納する
 
     Args:
-        function (f)): リクエストに追加するファンクションを設定する
+        function (f): リクエストに追加するファンクションを設定する
     """
     self.__flask.before_request(function)
 
