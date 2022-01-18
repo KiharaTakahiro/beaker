@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, session as session_by_flask, request as request_by_flask, render_template as render_template_by_flask
+from flask import Flask, session as session_by_flask, request as request_by_flask, render_template as render_template_by_flask, make_response
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
 
 from common.db import DbConnecter, Transaction
+from common.csv import CsvCreator
 from .utility import load_yaml
 import logging.config
 import sys
@@ -222,7 +223,6 @@ class Beaker():
       _, function = filter
       self.__flask.add_template_filter(function)
 
-
   def before_request(self, function):
     """リクエスト実行前のロジックを格納する
 
@@ -287,6 +287,37 @@ def start_transaction(read_only = True):
   Returns:
       Transaction: トランザクションを返却する
   """
+  logger.debug(f'read_only: {read_only}')
   return _beaker_db.start_transaction(read_only=read_only)
 
 request = request_by_flask
+
+def create_csv(headers):
+  """CSV出力のCreatorを返却する
+
+  Args:
+      headers (dict): keyとヘッダ名の辞書を返却
+
+  Returns:
+      CsvCreator: CsvCreatorの返却
+  """
+  logger.debug(f'headers: {headers}')
+  return CsvCreator(logger, headers)
+
+def make_csv_response(csv_data, file_name, chara_set='shift_jis'):
+  """CSVのレスポンスを返却する
+
+  Args:
+      csv_data (stream): CSVの値
+      file_name(str): CSVファイル名(拡張子は不要)
+  Returns:
+      response: csvのレスポンスを返却する
+  """
+  logger.debug(f'csv_data: {csv_data}')
+  logger.debug(f'file_name: {file_name}')
+  logger.debug(f'chara_set: {chara_set}')
+  response = make_response()
+  response.data = csv_data
+  response.headers['Content-Type'] = f'text/csv; charset={chara_set}'
+  response.headers['Content-Disposition'] = f'attachment; filename={file_name}.csv'
+  return response
