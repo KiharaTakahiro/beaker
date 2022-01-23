@@ -1,32 +1,6 @@
 log:
-  version: 1
-  formatters:
-    customFormatter:
-      format: '[%(asctime)s]%(levelname)s - %(filename)s#%(funcName)s:%(lineno)d: %(message)s'
-      datefmt: '%Y/%m/%d %H:%M:%S'
-  loggers:
-    app_logger:
-      handlers: [fileRotatingHandler,consoleHandler]
-      level: DEBUG
-      qualname: file
-      propagate: no
-  handlers:
-    fileRotatingHandler:
-      formatter: customFormatter
-      class: logging.handlers.TimedRotatingFileHandler
-      level: DEBUG
-      filename: ./logs/app.log
-      encoding: utf8
-      when: 'D'
-      interval: 1
-      backupCount: 14
-    consoleHandler:
-      class: logging.StreamHandler
-      level: DEBUG
-      formatter: customFormatter
-      stream: ext://sys.stdout
-  root:
-    level: DEBUG
+  level: 'DEBUG'
+  file_name: './logs/app.log'
 database:
   host: "localhost"
   dbname: "postgres"

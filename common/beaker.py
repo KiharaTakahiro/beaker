@@ -57,11 +57,57 @@ class BeakerLogger():
     Args:
         config (BeakerConfig): Beaker用のConfig定義クラス
     """
-
-    # FIXME: 現時点ではfuncname等がBeakerLogger内のメソッドとなってしまう。
-    #        本来は呼び出し元のメソッドを見るべきであり、修正する必要がある
-    logging.config.dictConfig(config['log'])
+    # デフォルトを以下のように定義する
+    logger_map =  {
+      'version': 1, 
+      'formatters': {
+        'customFormatter': {
+          'format': '[%(asctime)s]%(levelname)s - %(message)s', 
+          'datefmt': '%Y/%m/%d %H:%M:%S'
+         }
+       },
+      'loggers': {
+        'app_logger': {
+          'handlers': ['fileRotatingHandler', 'consoleHandler'],
+          'level': config['log']['level'],
+          'qualname': 'file',
+          'propagate': False}},
+          'handlers': {
+            'fileRotatingHandler': {
+              'formatter': 'customFormatter', 
+              'class': 'logging.handlers.TimedRotatingFileHandler', 
+              'level': config['log']['level'], 
+              'filename': config['log']['file_name'], 
+              'encoding': 'utf8', 
+              'when': 'D', 
+              'interval': 1, 
+              'backupCount': 14
+              }, 
+            'consoleHandler': {
+              'class': 'logging.StreamHandler', 
+              'level': config['log']['level'], 
+              'formatter': 'customFormatter', 
+              'stream': 'ext://sys.stdout'
+              }
+            }, 
+            'root': {
+              'level': 'DEBUG'
+              }
+            }
+    logging.config.dictConfig(logger_map)
     self._logger = logging.getLogger(logger_name)
+
+  def _get_file_name(self):
+    """ログの出力先の情報を取得する
+
+    Returns:
+        tuple: ファイル名と関数名の取得を行う
+    """
+    # 本メソッドは各出力処理から呼ばれているのでstackから2つ
+    # 遡ったもの関数がログの出力先であるとする
+    file_name = inspect.stack()[2].filename
+    function_name = inspect.stack()[2].function
+    return (file_name, function_name)
 
   def log(self, msg, log_level):
     """ログレベルに応じたログ出力
@@ -84,38 +130,41 @@ class BeakerLogger():
     else:
       raise Exception(f"存在しないログレベルです。log_level: {log_level}")
 
-  def debug(self, msg):
+  def debug(self, message):
     """デバッグログの出力
 
     Args:
-        msg (str): 出力メッセージ
+        message (str): 出力メッセージ
     """
-    self._logger.debug(msg)
+    file_name, function_name = self._get_file_name()
+    self._logger.debug(f'{file_name}#{function_name}: {message}')
 
-  def info(self, msg):
+  def info(self, message):
     """インフォログの出力
 
     Args:
-        msg (str): 出力メッセージ
+        message (str): 出力メッセージ
     """
-    self._logger.info(msg)
+    file_name, function_name = self._get_file_name()
+    self._logger.info(f'{file_name}#{function_name}: {message}')
 
-  def warning(self, msg):
+  def warning(self, message):
     """警告ログの出力
 
     Args:
-        msg (str): 出力メッセージ
+        message (str): 出力メッセージ
     """
-    self._logger.warning(msg)
+    file_name, function_name = self._get_file_name()
+    self._logger.warning(f'{file_name}#{function_name}: {message}')
 
-  def error(self, msg):
+  def error(self, message):
     """エラーログの出力
 
     Args:
-        msg (str): 出力メッセージ
+        message (str): 出力メッセージ
     """
-    self._logger.error(msg)
-
+    file_name, function_name = self._get_file_name()
+    self._logger.error(f'{file_name}#{function_name}: {message}')
 
 logger = BeakerLogger(get_config())
 
@@ -181,6 +230,26 @@ class BeakerRouter():
     for route in self._route:
       app.add_url_rule(route['path'], view_func=route['function'], methods=route['methods'])
 
+def _internal_server_error(e):
+  """内部サーバエラーが発生した場合の処理
+  """
+  logger.error('内部サーバエラーが発生しました。')
+  logger.error(e)
+  logger.error(f"セッション情報: {session_by_flask}")
+  logger.error(f"リクエスト情報: {request_by_flask}")
+  return render_template('errors/500.html'), 500
+
+def _page_not_found(e):
+  """404エラーが発生した場合の処理
+
+  Returns:
+      Any: 404エラーが発生した場合のテンプレートを変更する
+  """
+  logger.error('404エラーが発生しました。')
+  logger.error(f"リクエスト情報: {request_by_flask}")
+  logger.error(e)
+  return render_template('errors/404.html'), 404
+
 class Beaker():
   """Beaker
      Flaskを拡張してWEBを作成しやすく拡張する
@@ -197,7 +266,7 @@ class Beaker():
     self.__flask = Flask(__name__, template_folder='../templates', static_folder='../statics')
   
     # CSRFトークン設定
-    csrf = CSRFProtect(self.__flask)
+    self.csrf = CSRFProtect(self.__flask)
     self.__flask.config['SECRET_KEY'] = app_vars['secretKey']
 
     # セッション関連処理
@@ -222,14 +291,25 @@ class Beaker():
     for filter in filters:
       _, function = filter
       self.__flask.add_template_filter(function)
+    
+    # エラー関連処理
+    self._register_error()
 
   def before_request(self, function):
-    """リクエスト実行前のロジックを格納する
+    """リクエスト実行前のロジックを設定する
 
     Args:
-        function (f): リクエストに追加するファンクションを設定する
+        function (f): 実行するメソッド
     """
     self.__flask.before_request(function)
+
+  def after_request(self, function):
+    """リクエスト実行後のロジックを設定する
+
+    Args:
+        function (f): 実行するメソッド
+    """
+    self.__flask.after_request(function)
 
   def _extension_session(self):
     """セッションを延命する
@@ -243,6 +323,14 @@ class Beaker():
     """
     logger.debug(f"セッション情報: {session_by_flask}")
     logger.debug(f"リクエスト情報: {request_by_flask}")
+  
+  def _register_error(self):
+    """エラーハンドラの登録処理
+    """
+    # 404エラーの場合のエラーハンドラの登録
+    self.__flask.register_error_handler(404, _page_not_found)
+    # 内部サーバエラーの場合のエラーハンドラの登録
+    self.__flask.register_error_handler(500, _internal_server_error)
 
   def run(self):
     self.__flask.run(port=get_config()['app']['port'])

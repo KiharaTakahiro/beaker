@@ -38,3 +38,6 @@ def welcome_get_csv():
     csv_data = cc.getvalue()
   # test.csvとしてダウンロードさせる
   return make_csv_response(csv_data, 'test')
+
+def welcome_error_test():
+  raise Exception('エラー発生を確認するテストのためのメソッド!!')
