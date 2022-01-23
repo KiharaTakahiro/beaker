@@ -1,3 +1,9 @@
-<html>
-  <h1>先ほどの入力は{{ post_text }}でした。</h1>
-</html>
+{% extends "base.html" %}
+
+{% block title %}
+WELCOME PAGEの送信確認
+{% endblock %}
+
+{% block content %}
+<h1>先ほどの入力は{{ post_text }}でした。</h1>
+{% endblock %}

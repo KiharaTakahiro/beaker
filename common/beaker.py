@@ -103,8 +103,8 @@ class BeakerLogger():
     Returns:
         tuple: ファイル名と関数名の取得を行う
     """
-    # 本メソッドは各出力処理から呼ばれているのでstackから2つ
-    # 遡ったもの関数がログの出力先であるとする
+    # NOTE: 本メソッドは各出力処理から呼ばれているのでstackから2つ
+    #       遡ったもの関数がログの出力先であるとする
     file_name = inspect.stack()[2].filename
     function_name = inspect.stack()[2].function
     return (file_name, function_name)

@@ -1,4 +1,10 @@
-<html>
+{% extends "base.html" %}
+
+{% block title %}
+WELCOME PAGE
+{% endblock %}
+
+{% block content %}
   <h1>{{ welcome_text }}</h1>
 
   <img src="{{ url_for('static', filename='img/beaker-1.jpg') }}" alt="BAKERの画像" title="BEAKERの画像">
@@ -21,4 +27,4 @@
   <p>文字列結合処理の確認5: {{ "aaa" | concat_list }} ※エラーにはならないがログにはwarningで出力される</p>
   <p>文字列結合処理の確認6: {{ "aaa" | concat_list(exception_text='エラー発生!') }} ※エラーにはならないがログにはwarningで出力される</p>
 
-</html>
+{% endblock %}
