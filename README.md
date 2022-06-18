@@ -1,14 +1,23 @@
 # BEAKERの概要
 flaskを拡張していつも設定するような内容を事前に設定できるようにまとめるとともにLaravelから入ってきたエンジニアがflaskにとっつきやすくなるようにrouterの定義をLaravelのweb.phpでの設定と似たような方法で設定できるように変更しました。
 
+# 前提
+[poetry](https://cocoatomo.github.io/poetry-ja/)を使用しておりますので各自インストールをお願いします。
+pipの場合は下記のコマンドでインストール可能です。(--userは必要であれば使ってください)
+```
+pip install --user poetry
+```
+データベースはpostgresの使用を想定しています。各自postgresのインストールをお願いします。
+
 # クイックスタート(Windows)
+## 初回のみ実施が必要なこと
 1. [example.config.yml](https://github.com/KiharaTakahiro/beaker/blob/main/example.config.yml)をもとにconfig.ymlを作成(とりあえず試すだけならばリネームでOK)
+1. beakerディレクトリで`poertry install`を実行しpoetryでの実行ができるようにする
+## 起動時に必要なこと
+1. beakerディレクトリで`poertry shell`を実行しpoetryでの実行ができるようにする
+1. `cd beaker`にてbeakerにディレクトリを移動
 1. `python app.py`にてbeakerを実行
 1. [http://127.0.0.1:5000/](http://127.0.0.1:5000/)にアクセスするとwelcomeページが表示される
-
-
-※現時点でパッケージ管理を何にするか決めていないのでモジュール不足でエラーとなった場合は必要なモジュールのインストールをお願いします。
-
 
 # 使い方
 ## ルート定義設定

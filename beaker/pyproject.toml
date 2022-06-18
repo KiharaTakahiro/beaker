@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "beaker"
+version = "0.1.0"
+description = ""
+authors = ["KiharaTakahiro <takahirokihara123@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.1.2"
+flake8 = "^4.0.1"
+psycopg2 = "^2.9.3"
+Flask-WTF = "^1.0.1"
+pyyml = "^0.0.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

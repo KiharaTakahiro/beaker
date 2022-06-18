@@ -4,8 +4,8 @@ from flask import Flask, session as session_by_flask, request as request_by_flas
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
 
-from common.db import DbConnecter, Transaction
-from common.csv import CsvCreator
+from .db import DbConnecter, Transaction
+from .csv import CsvCreator
 from .utility import load_yaml
 import logging.config
 import sys
@@ -67,7 +67,7 @@ class BeakerLogger():
          }
        },
       'loggers': {
-        'app_logger': {
+        logger_name : {
           'handlers': ['fileRotatingHandler', 'consoleHandler'],
           'level': config['log']['level'],
           'qualname': 'file',
@@ -91,7 +91,7 @@ class BeakerLogger():
               }
             }, 
             'root': {
-              'level': 'DEBUG'
+              'level': config['log']['level']
               }
             }
     logging.config.dictConfig(logger_map)
@@ -214,7 +214,7 @@ class BeakerRouter():
   def __init__(self):
     self._route = []
 
-  def get(self, path, function):
+  def get(self, path, function, auth=False):
     self._route.append({'path': path, 'function': function, 'methods': ['GET',]})
 
   def post(self, path, function):
@@ -294,6 +294,17 @@ class Beaker():
     
     # エラー関連処理
     self._register_error()
+
+  def test_client(self):
+    """テストクライアントの返却
+
+    Returns:
+        client: テストクライアント
+    """
+    self.__flask.config['TESTING'] = True
+    self.__flask.config['WTF_CSRF_ENABLED'] = False
+
+    return self.__flask.test_client()
 
   def before_request(self, function):
     """リクエスト実行前のロジックを設定する
