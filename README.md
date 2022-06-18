@@ -8,7 +8,7 @@ pipの場合は下記のコマンドでインストール可能です。(--user�
 pip install --user poetry
 ```
 データベースはpostgresの使用を想定しています。各自postgresのインストールをお願いします。
-
+aa
 # クイックスタート(Windows)
 ## 初回のみ実施が必要なこと
 1. [example.config.yml](https://github.com/KiharaTakahiro/beaker/blob/main/example.config.yml)をもとにconfig.ymlを作成(とりあえず試すだけならばリネームでOK)
