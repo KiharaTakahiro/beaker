@@ -298,7 +298,7 @@ class QueryBuilder(object):
         tx.save(query, tuple(update_values))
 
   def delete(self):
-    query, query_values = self._query_build("DELETE FROM {self._table_name} ")
+    query, query_values = self._query_build(f"DELETE FROM {self._table_name} ")
     query = self._crean_query(query)
     if self._tx is not None:
       self._tx.save(query, tuple(query_values))
