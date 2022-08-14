@@ -115,6 +115,59 @@ def execute_sql():
 ```
 ※ロジック上はsaveでも削除系のSQLの実行は可能だが、今後の拡張も考えて削除時に実行するSQLは分けることを推奨します。
 
+## クエリビルダ
+### 取得
+下記のコードで該当抽出条件に従ってSQLが生成されます
+#### 書き方
+```
+# サンプル
+  with start_transaction() as tx:
+    query_builder = create_query_builder(tx)
+    client = query_builder.table('{テーブル名}').where('{フィールド名}', '=', 2).or_where('{フィールド名2}', '=', 3).select()
+
+# 全項目を取得する必要がない時はselectの引数に与えれば必要分だけの取得になります
+client = query_builder.table('{テーブル名}').where('{フィールド名}', '=', 2).or_where('{フィールド名2}', '=', 3).select('{フィールド名3}',{フィールド名4})
+```
+
+#### 生成されるSQL
+`SELECT * FROM {テーブル名} WHERE {フィールド名} = %s OR {フィールド名2} = %s;`
+AND条件としたいときはwhereを続けて使用すればAND条件となります
+
+### 登録
+登録内容に従ってINSERT文を発行します。
+#### 書き方
+```
+  with start_transaction(False) as tx:
+    query_builder = create_query_builder(tx)
+    query_builder.table('{テーブル名}').insert({'{フィールド名}': 6, '{フィールド名2}': 'test'})
+
+```
+#### 生成されるSQL文
+`INSERT INTO {テーブル名} ({フィールド名}, {フィールド名2}) VALUES (%s, %s);`
+
+### 更新
+更新内容に従って更新処理を行います。
+#### 書き方
+```
+  with start_transaction(False) as tx:
+    query_builder = create_query_builder(tx)
+    query_builder.table('{テーブル名}').where('{フィールド名}', '=', 6).update({'{フィールド名2}': 'test2'})
+
+```
+#### 生成されるSQL文
+`UPDATE {テーブル名} SET {フィールド名2} = %s WHERE {フィールド名}= %s;`
+
+### 削除
+下記の内容に従って削除処理を行います。
+#### 書き方
+```
+  with start_transaction(False) as tx:
+    query_builder = create_query_builder(tx)
+    query_builder.table('{テーブル名}').where('{フィールド名}', '=', 6).delete()
+```
+#### 生成されるSQL文
+`DELETE FROM {テーブル名} WHERE {フィールド名}= %s;`
+
 ## カスタムフィルタの追加について
 [template_filters.py](https://github.com/KiharaTakahiro/beaker/blob/main/template_filters.py)に記載されたメソッドはtemplateで同名のカスタムフィルタが使用可能になります。
 ### template_filters.pyにてカスタムフィルタを追加する（例は金額変換処理）
