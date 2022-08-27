@@ -4,7 +4,7 @@ from flask import Flask, session as session_by_flask, request as request_by_flas
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
 
-from .db import DbConnecter, Transaction, QueryBuilder
+from pgsupporter import DbConnecter, QueryBuilder, Transaction
 from .csv import CsvCreator
 from .utility import load_yaml
 import logging.config
@@ -374,7 +374,7 @@ class BeakerDB():
     Returns:
         Transaction: トランザクションを返却する
     """
-    return Transaction(self._connector, self._logger, read_only)
+    return Transaction(self._connector, read_only)
 
   def get_db_connector(self):
     return self._connector
@@ -395,8 +395,8 @@ def start_transaction(read_only = True):
 
 def create_query_builder(tx=None):
   if tx is None:
-    return QueryBuilder(logger, db_conecter=_beaker_db.get_db_connector())
-  return QueryBuilder(logger, tx=tx)
+    return QueryBuilder(db_conecter=_beaker_db.get_db_connector())
+  return QueryBuilder(tx=tx)
 
 request = request_by_flask
 

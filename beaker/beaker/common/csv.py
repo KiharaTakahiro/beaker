@@ -5,16 +5,14 @@ class CsvCreator():
   """ CSVの作成処理を行うためのクラス
   """
 
-  def __init__(self, logger, headers):
+  def __init__(self, headers):
     """ CSV作成処理の初期化
 
     Args:
         logger (logging): loggingのlogger
         headers (dict): keyと表示ヘッダーの値の辞書
     """
-    self.__logger = logger
     self.__headers = headers
-    self.__logger.debug(f'headers: {headers}')
 
   def __create_data(self):
     """ CSVのデータ作成
@@ -34,7 +32,6 @@ class CsvCreator():
         data_row (dect): headerのkeyにマッピングするvalue
     """
     csv_row = []
-    self.__logger.debug(f'row: {data_row}')
     for key in self.__headers.keys():
       if key in data_row:
         csv_row.append(data_row[key])
@@ -49,7 +46,6 @@ class CsvCreator():
     Returns:
         stream: CSVの値
     """
-    self.__logger.debug(f'encode: {encode}')
     return self.__data.getvalue().encode(encode)
 
   def __enter__(self):
@@ -60,8 +56,5 @@ class CsvCreator():
   def __exit__(self, exc_type, exc_value, traceback):
     self.__data.close()
     if exc_type is not None:
-      self.__logger.error(f'エラーの種類: {exc_type}')
-      self.__logger.error(f'エラーの値: {exc_value}')
-      self.__logger.error(traceback)
-
+      raise Exception(f"CSV作成処理でエラーが発生しました。")
 
