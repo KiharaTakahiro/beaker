@@ -11,6 +11,8 @@ flake8 = "^4.0.1"
 psycopg2 = "^2.9.3"
 Flask-WTF = "^1.0.1"
 pyyml = "^0.0.2"
+tweepy = "^4.10.0"
+pgsupporter = {git = "https://github.com/KiharaTakahiro/pgsupporter.git", rev = "main"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
